@@ -1,0 +1,47 @@
+pathname_tmp = '.\Tmp\';
+pathname_data = '.\Data\';
+
+bits_list = [10:16, 20, 24, 28, 32];
+
+figure(1);
+load(strcat(pathname_data, 'Energy_Gen.mat'));
+load(strcat(pathname_data, 'Energy_PM.mat'));
+load(strcat(pathname_data, 'Energy_FedAvg.mat'));
+load(strcat(pathname_data, 'Energy_PR.mat'));
+line1=loglog(bits_list(2:end), energy_line_Gen(2:end),'r-o',bits_list(2:end), energy_line_PM(2:end),'b:+',bits_list(2:end), energy_line_FedAvg(2:end),'g:s',bits_list(2:end), energy_line_PR(2:end),'m:^');
+% grid on;
+hold on;
+set(line1,'LineWidth',1.5,'MarkerSize',8);
+
+load(strcat(pathname_data, 'Energy_dim.mat'));
+load(strcat(pathname_data, 'Energy_PM_fix.mat'));
+load(strcat(pathname_data, 'Energy_FedAvg_fix.mat'));
+load(strcat(pathname_data, 'Energy_PR_fix.mat'));
+line2=loglog(bits_list(2:end), energy_line_dim(2:end),'r--o',bits_list(2:end), energy_line_PM_fix(2:end),'b--+',bits_list(2:end), energy_line_FedAvg_fix(2:end),'g--s',bits_list(2:end), energy_line_PR_fix(2:end),'m--^');
+set(line2,'LineWidth',1.5,'MarkerSize',8);
+
+energy_min = min(energy_line_Gen);  energy_max = max(energy_line_Gen);
+energy_min = min([energy_min, min(energy_line_dim)]);  energy_max = max([energy_max, max(energy_line_dim)]);
+energy_min = min([energy_min, min(energy_line_PM)]);    energy_max = max([energy_max, max(energy_line_PM)]);
+energy_min = min([energy_min, min(energy_line_PM_fix)]);    energy_max = max([energy_max, max(energy_line_PM_fix)]);
+energy_min = min([energy_min, min(energy_line_FedAvg)]);    energy_max = max([energy_max, max(energy_line_FedAvg)]);
+energy_min = min([energy_min, min(energy_line_FedAvg_fix)]);    energy_max = max([energy_max, max(energy_line_FedAvg_fix)]);
+energy_min = min([energy_min, min(energy_line_PR)]);    energy_max = max([energy_max, max(energy_line_PR)]);
+energy_min = min([energy_min, min(energy_line_PR_fix)]);    energy_max = max([energy_max, max(energy_line_PR_fix)]);
+
+set(gca,'XTick', bits_list);
+ax = gca;
+ax.YAxis.Exponent = 4;
+ax.Box = 'off';
+axis([min(bits_list(2:end)), max(bits_list), 0.99*energy_min, 1.5*energy_max]);
+xlabel('Quantization Parameters $\log_2s_0$','Interpreter','latex');
+ylabel('Energy Cost','Interpreter','latex');
+set(gca,'linewidth',1.5);
+set(gca,'FontSize',12);
+grid on;
+
+lgd1 = legend(line1,'Gen-O' , 'PM-D-opt' , 'FA-D-opt' , 'PR-D-opt', 'Without Reflector','Location','northwest');
+ah=axes('position',get(gca,'position'),'visible','off');
+lgd2 = legend(ah,line2,'Gen-D' ,  'PM-D-fix' , 'FA-D-fix' , 'PR-D-fix', 'Location','northeast');
+set(lgd1,'FontSize',10, 'LineWidth',1);
+set(lgd2,'FontSize',10, 'LineWidth',1);
